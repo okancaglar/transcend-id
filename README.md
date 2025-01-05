@@ -1,41 +1,84 @@
-# transcend-id
-Blockchain based immigrant identity and tracking system
+# Blockchain-Based Immigrant Identity System
 
+## **System Overview**
 
-System Analysis and Design
+This system is a private (closed) blockchain network designed to manage immigrant identities and location logs. Access is restricted to authorized government officers, ensuring a secure and controlled environment.
 
-System:
-The system is a private (closed) blockchain network that can only be accessed by authorized government officers.
+---
 
-Users:
+## **Users**
 
-    Officer: Each officer has a user ID and password, stored in a MySQL database.
+### **Officer**
+- Each government officer has a unique user ID and password.
+- Login credentials are securely stored in a MySQL database.
 
-System Functionality:
+---
 
-    Login
-    Government officers can log in with their unique ID and password.
+## **System Functionality**
 
-    Create Immigrant Identity
-        First, the system generates a public-private key pair for the immigrant. The private key is not stored anywhere in the system.
-        The public key is stored in the “identity contract” on the blockchain network for verification.
-        The identity is then recorded on the blockchain (making it immutable). The identity contract contains the following fields:
-            A unique ID (determined by a chosen algorithm).
-            The immigrant’s public key.
-            Name, surname, and ethnicity.
-            The creation timestamp.
-            The government officer who created this transaction.
-        The system returns the private key and the immigrant’s ID to the user interface so the officer can provide them to the immigrant.
-        This completes the immigrant creation process.
+### **1. Login**
+- Government officers can log in using their unique ID and password.
 
-    Validate Immigrant Identity
-        To validate an immigrant’s identity, the officer retrieves the immigrant’s ID and private key.
-        The private key is used in the frontend to sign a message.
-        The signed message and the ID are then sent to the backend service.
-        The backend fetches the immigrant’s public key from the blockchain network and verifies the signature.
-        The verification result is sent back to the frontend.
+---
 
-    Create Location Log
-        The officer can record the immigrant’s location for a specific time.
-        The officer provides the immigrant’s ID and the location to the backend service.
-        The backend creates an immutable transaction on the blockchain network containing the immigrant’s ID, the location, and a timestamp.
+### **2. Create Immigrant Identity**
+- The system generates a **public-private key pair** for the immigrant:
+  - **Private Key**: Not stored anywhere in the system.
+  - **Public Key**: Stored in the “identity contract” on the blockchain for verification.
+- The immigrant's identity is recorded immutably on the blockchain, including:
+  - A **unique ID** (determined by a chosen algorithm).
+  - The immigrant’s **public key**.
+  - **Name**, **surname**, and **ethnicity**.
+  - The **creation timestamp**.
+  - The **government officer ID** who created the transaction.
+- After recording the identity:
+  - The system returns the **private key** and **unique ID** to the user interface for the officer to provide to the immigrant.
+- This process completes the immigrant’s identity creation.
+
+---
+
+### **3. Validate Immigrant Identity**
+- To verify an immigrant’s identity:
+  1. The officer retrieves the immigrant’s **ID** and **private key**.
+  2. The **private key** is used in the frontend to sign a message.
+  3. The **signed message** and **ID** are sent to the backend.
+  4. The backend:
+     - Fetches the immigrant’s **public key** from the blockchain network.
+     - Verifies the **signature** using the public key.
+  5. The result of the verification is returned to the frontend.
+
+---
+
+### **4. Create Location Log**
+- Officers can log an immigrant’s location at a specific time:
+  1. The officer provides the **immigrant’s ID** and the **location** to the backend service.
+  2. The backend creates an **immutable transaction** on the blockchain, containing:
+     - Immigrant’s **ID**.
+     - **Location information**.
+     - **Timestamp** of the entry.
+
+---
+
+## **Purpose**
+This system ensures:
+1. **Immutable Records**: All identity and location data are securely stored on the blockchain.
+2. **Accountability**: Each transaction is traceable to the officer who performed it.
+3. **Data Integrity**: The system uses cryptographic keys to verify identities without storing sensitive private keys.
+
+---
+
+## **Technology Stack**
+- **Blockchain Network**: Ganache (local blockchain).
+- **Smart Contracts**: Written in Solidity.
+- **Backend**: Spring Boot.
+- **Database**: MySQL (for officer credentials).
+- **Integration Scripts**: Python (Web3.py).
+
+---
+
+## **Setup and Usage**
+1. Deploy the blockchain network using Ganache.
+2. Compile and deploy the `ImmigrantRegistry` smart contract to the blockchain.
+3. Use the Spring Boot backend for managing user interactions and API endpoints.
+4. Use Python scripts to interact with the blockchain for deploying contracts and verifying data.
+
