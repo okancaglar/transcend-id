@@ -1,13 +1,13 @@
-package blockchain.service.transcendid;
+package com.example.demo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class TranscendidApplication {
+public class DemoApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(TranscendidApplication.class, args);
+		SpringApplication.run(DemoApplication.class, args);
 	}
 
 }
