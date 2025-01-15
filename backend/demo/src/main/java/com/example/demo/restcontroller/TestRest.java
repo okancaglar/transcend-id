@@ -1,5 +1,6 @@
 package com.example.demo.restcontroller;
 
+import com.example.demo.dtos.ImmigrantBlockchainData;
 import com.example.demo.services.blockchainservice.BlockchainService;
 import com.example.demo.services.blockchainservice.UUIDService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ public class TestRest {
 
 	private BlockchainService blockchainService;
 	private UUIDService uuidService;
+	private String uuidG = "";
 
 	@Autowired
 	public TestRest(BlockchainService service, UUIDService uuidService) {
@@ -26,10 +28,13 @@ public class TestRest {
 		String publicKey = keyPair[1];
 		String privateKey = keyPair[0];
 
+
+
 		System.out.println(publicKey);
 		System.out.println(privateKey);
 
 		String uuid = uuidService.createUUID();
+		this.uuidG = uuid;
 		String name = "test 1";
 		String lastname = "test 1l";
 		String ethnicity = "syrian";
@@ -43,5 +48,14 @@ public class TestRest {
 	}
 
 
+	@GetMapping("/get")
+	public String getUser(){
+
+		ImmigrantBlockchainData immigrantBlockchainData = blockchainService.getImmigrantByUUID(this.uuidG);
+		return immigrantBlockchainData.getUuid() + "\n" +
+				immigrantBlockchainData.getName() + "\n" +
+				immigrantBlockchainData.getCreationTime();
+
+	}
 
 }
