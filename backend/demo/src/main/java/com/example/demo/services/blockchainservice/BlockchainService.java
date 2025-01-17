@@ -13,6 +13,8 @@ import org.web3j.protocol.core.methods.request.Transaction;
 import org.web3j.protocol.core.methods.response.EthEstimateGas;
 import org.web3j.protocol.core.methods.response.EthGetCode;
 import org.web3j.protocol.http.HttpService;
+import org.web3j.tuples.Tuple;
+import org.web3j.tuples.generated.Tuple4;
 import org.web3j.tx.gas.DefaultGasProvider;
 
 import com.example.demo.blockchainwrapper.*;
@@ -20,8 +22,11 @@ import org.web3j.tx.gas.StaticGasProvider;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class BlockchainService {
@@ -237,20 +242,21 @@ public class BlockchainService {
 	/**
 	 * Fetch location logs for an immigrant by their ID.
 	 */
-	public LocationLogData[] getImmigrantLocationLogs(String immigrantId) {
+	public List<LocationLogData> getImmigrantLocationLogs(String immigrantId) {
 		try {
-			// The generated method returns an array of LocationLog
-			ImmigrantLocationLog.LocationLog[] logs = (ImmigrantLocationLog.LocationLog[]) locationContract.getLocationLogs(immigrantId).send().toArray();
 
-			// Convert array -> stream -> map -> array
-			return Arrays.stream(logs)
+			// The generated method returns an array of LocationLog
+			List<List<Object>> logs = locationContract.getLocationLogs(immigrantId).send();
+
+			// Map logs to LocationLogData DTOs
+			return logs.stream()
 					.map(log -> new LocationLogData(
-							log.immigrantId,
-							log.location,
-							log.timestamp,
-							log.officerId
+							log.get(0).toString(), // Immigrant ID
+							log.get(1).toString(), // Location
+							log.get(2).toString(), // Timestamp
+							log.get(3).toString()  // Officer ID
 					))
-					.toArray(LocationLogData[]::new);
+					.collect(Collectors.toList());
 
 		} catch (Exception e) {
 			e.printStackTrace();

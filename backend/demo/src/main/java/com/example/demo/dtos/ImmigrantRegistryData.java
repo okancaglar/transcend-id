@@ -1,6 +1,6 @@
 package com.example.demo.dtos;
 
-public class ImmigrantData {
+public class ImmigrantRegistryData {
 	private String uuid;
 	private String name;
 	private String surname;
@@ -8,9 +8,9 @@ public class ImmigrantData {
 	private String creationTime;
 	private String officerId;
 
-	public ImmigrantData() {}
+	public ImmigrantRegistryData() {}
 
-	public ImmigrantData(String uuid, String name, String surname, String ethnicity, String creationTime, String officerId) {
+	public ImmigrantRegistryData(String uuid, String name, String surname, String ethnicity, String creationTime, String officerId) {
 		this.uuid = uuid;
 		this.name = name;
 		this.surname = surname;

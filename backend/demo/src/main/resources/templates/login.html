@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Login - Officer Portal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Reset some default browser styles */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: 'Arial', sans-serif;
+        }
+
+        /* Background gradient */
+        body {
+            background: linear-gradient(135deg, #0072ff, #00c6ff);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Login container */
+        .login-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        /* Heading */
+        .login-container h1 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
+            text-align: center;
+        }
+
+        /* Input styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            font-size: 14px;
+            color: #555;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        /* Submit button */
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            color: white;
+            background: linear-gradient(90deg, #0072ff, #00c6ff);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .btn:hover {
+            background: linear-gradient(90deg, #00c6ff, #0072ff);
+        }
+
+        /* Link styles */
+        .form-footer {
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .form-footer a {
+            font-size: 14px;
+            text-decoration: none;
+            color: #0072ff;
+        }
+
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="login-container">
+    <h1>Officer Login</h1>
+    <form action="/login" method="POST" th:action="@{/login}">
+        <div class="form-group">
+            <label for="officerId">Officer ID</label>
+            <input type="text" id="officerId" name="officerId" placeholder="Enter your Officer ID" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Enter your password" required>
+        </div>
+        <button type="submit" class="btn">Login</button>
+    </form>
+    <div class="form-footer">
+        <a href="#">Forgot your password?</a>
+    </div>
+</div>
+</body>
+</html>
