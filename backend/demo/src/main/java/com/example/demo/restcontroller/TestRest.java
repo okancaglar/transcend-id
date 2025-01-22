@@ -1,35 +1,39 @@
 package com.example.demo.restcontroller;
 
-import com.example.demo.blockchainwrapper.ImmigrantLocationLog;
-import com.example.demo.dtos.ImmigrantBlockchainData;
-import com.example.demo.dtos.LocationLogData;
+import com.example.demo.dtos.response.ImmigrantBlockchainData;
+import com.example.demo.dtos.response.LocationLogData;
+import com.example.demo.dtos.request.OfficerLoginData;
+import com.example.demo.exceptions.APIException;
 import com.example.demo.services.blockchainservice.BlockchainService;
+import com.example.demo.services.blockchainservice.JwtService;
+import com.example.demo.services.blockchainservice.OfficerService;
 import com.example.demo.services.blockchainservice.UUIDService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
-@RequestMapping("/test/")
+@RequestMapping("/test")
 @RestController
 public class TestRest {
 
-	private BlockchainService blockchainService;
-	private UUIDService uuidService;
+	private final BlockchainService blockchainService;
+	private final UUIDService uuidService;
+	private final OfficerService officerService;
+	private final JwtService jwtService;
 	private String uuidG = "";
 
 	@Autowired
-	public TestRest(BlockchainService service, UUIDService uuidService) {
+	public TestRest(BlockchainService service, UUIDService uuidService, OfficerService officerService, JwtService jwtService) {
 		this.blockchainService = service;
 		this.uuidService = uuidService;
+		this.officerService = officerService;
+		this.jwtService = jwtService;
 	}
 
 	@GetMapping("/")
-	public String getIndex(){
+	public String getIndex() throws APIException {
 
 
 		String[] keyPair = blockchainService.generateKeyPair();
@@ -64,7 +68,7 @@ public class TestRest {
 
 
 	@GetMapping("/get/{id}")
-	public String getUser(@PathVariable(value = "id") String id){
+	public String getUser(@PathVariable(value = "id") String id) throws APIException {
 
 		ImmigrantBlockchainData immigrantBlockchainData = blockchainService.getImmigrantByUUID(id);
 
@@ -79,6 +83,15 @@ public class TestRest {
 				immigrantBlockchainData.getName() + "\n" +
 				immigrantBlockchainData.getCreationTime() + "\n" +
 				logs.toString();
+
+	}
+
+	@GetMapping("/login")
+	public ResponseEntity<String> login(@RequestBody OfficerLoginData officerLoginData) throws APIException {
+
+		officerService.authenticate(officerLoginData);
+		String token = jwtService.generateToken(officerService.getOfficerById(Integer.parseInt(officerLoginData.getOfficerId())));
+		return ResponseEntity.ok(token);
 
 	}
 

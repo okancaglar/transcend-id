@@ -28,6 +28,7 @@ public class JwtService {
 
 	public String extractUserId(String token)
 	{
+		System.out.println("Extracting user ID from token: " + token);
 		return extractClaim(token, Claims::getSubject);
 	}
 
@@ -39,11 +40,16 @@ public class JwtService {
 
 	private Claims extractAllClaims(String token)
 	{
-		return Jwts.parserBuilder()
-				.setSigningKey(getSignInKey())
-				.build()
-				.parseClaimsJwt(token)
-				.getBody();
+		try {
+			return Jwts.parserBuilder()
+					.setSigningKey(getSignInKey())
+					.build()
+					.parseClaimsJws(token)
+					.getBody();
+		}catch (Exception e) {
+			System.out.println("Failed to extract claims: " + e.getMessage());
+		}
+		return null;
 	}
 
 	private Key getSignInKey()
@@ -88,7 +94,6 @@ public class JwtService {
 	{
 		final String userName = extractUserId(token);
 		return userName.equals(userDetails.getUsername()) && !isTokenExpired(token);
-
 	}
 
 	private boolean isTokenExpired(String token)

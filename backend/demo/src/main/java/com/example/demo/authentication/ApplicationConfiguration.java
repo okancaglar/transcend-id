@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 
 @Configuration
 public class ApplicationConfiguration {
@@ -46,7 +47,7 @@ public class ApplicationConfiguration {
 
 		DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
 
-		authProvider.setPasswordEncoder(passwordEncoder());
+		authProvider.setPasswordEncoder(NoOpPasswordEncoder.getInstance());
 		authProvider.setUserDetailsService(userDetailsService());
 
 		return authProvider;

@@ -9,7 +9,7 @@ import json
 install_solc("0.8.0")
 
 # Ganache URL
-ganache_url = "http://127.0.0.1:7545"  # Adjust port if Ganache GUI uses a different one
+ganache_url = "http://127.0.0.1:8545"  # Adjust port if Ganache GUI uses a different one
 w3 = Web3(Web3.HTTPProvider(ganache_url))
 
 # Check connection to Ganache
@@ -45,9 +45,8 @@ def compile_contract(file_path):
     return abi, bytecode
 
 # Compile both contracts
-#registry_abi, registry_bytecode = compile_contract("/home/marcus-aurelius/Projects/SchoolProjects/DecentrelizedSystemsAndApplications/TranscendID/transcend-id/contracts/ImmigrantRegistry.sol")
-#location_abi, location_bytecode = compile_contract("/home/marcus-aurelius/Projects/SchoolProjects/DecentrelizedSystemsAndApplications/TranscendID/transcend-id/contracts/ImmigrantLocationLog.sol")
-test_abi, test_bytecode = compile_contract("/home/marcus-aurelius/Projects/SchoolProjects/DecentrelizedSystemsAndApplications/TranscendID/transcend-id/contracts/test.sol")
+registry_abi, registry_bytecode = compile_contract("/home/marcus-aurelius/Projects/SchoolProjects/DecentrelizedSystemsAndApplications/TranscendID/transcend-id/contracts/ImmigrantRegistry.sol")
+location_abi, location_bytecode = compile_contract("/home/marcus-aurelius/Projects/SchoolProjects/DecentrelizedSystemsAndApplications/TranscendID/transcend-id/contracts/ImmigrantLocationLog.sol")
 
 # Deploy a contract
 def deploy_contract(abi, bytecode):
@@ -57,17 +56,17 @@ def deploy_contract(abi, bytecode):
     return tx_receipt.contractAddress
 
 # Deploy ImmigrantRegistry contract
-#registry_address = deploy_contract(registry_abi, registry_bytecode)
-#print(f"ImmigrantRegistry deployed at: {registry_address}")
+registry_address = deploy_contract(registry_abi, registry_bytecode)
+print(f"ImmigrantRegistry deployed at: {registry_address}")
 
 # Deploy ImmigrantLocationContract
-#location_address = deploy_contract(location_abi, location_bytecode)
-#print(f"ImmigrantLocationContract deployed at: {location_address}")
+location_address = deploy_contract(location_abi, location_bytecode)
+print(f"ImmigrantLocationContract deployed at: {location_address}")
 
-test_address = deploy_contract(test_abi, test_bytecode)
+
 
 # Save deployed contract details to a JSON file
-"""
+
 deployed_info = {
     "ImmigrantRegistry": {
         "address": registry_address,
@@ -78,10 +77,9 @@ deployed_info = {
         "abi": location_abi
     }
 }
-"""
-"""
+
 with open("deployed_contracts.json", "w") as f:
     json.dump(deployed_info, f, indent=4)
 
 print("Deployment info saved to deployed_contracts.json")
-"""
+

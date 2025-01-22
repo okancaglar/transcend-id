@@ -1,31 +1,21 @@
 package com.example.demo.services.blockchainservice;
 
-import com.example.demo.dtos.*;
+import com.example.demo.dtos.response.ImmigrantBlockchainData;
+import com.example.demo.dtos.response.LocationLogData;
+import com.example.demo.exceptions.APIException;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.web3j.crypto.Credentials;
-import org.web3j.crypto.ECKeyPair;
-import org.web3j.crypto.Keys;
+import org.web3j.crypto.*;
 import org.web3j.protocol.Web3j;
-import org.web3j.protocol.core.DefaultBlockParameterName;
-import org.web3j.protocol.core.methods.request.Transaction;
-import org.web3j.protocol.core.methods.response.EthEstimateGas;
-import org.web3j.protocol.core.methods.response.EthGetCode;
 import org.web3j.protocol.http.HttpService;
-import org.web3j.tuples.Tuple;
-import org.web3j.tuples.generated.Tuple4;
 import org.web3j.tx.gas.DefaultGasProvider;
-
 import com.example.demo.blockchainwrapper.*;
-import org.web3j.tx.gas.StaticGasProvider;
 
 import java.math.BigInteger;
-import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,6 +25,8 @@ public class BlockchainService {
 	private Credentials credentials;
 	private ImmigrantRegistry registryContract;
 	private ImmigrantLocationLog locationContract;
+
+	private static final String VALIDATION_STRING = "ImmigrantValidationString";
 
 	// Blockchain and contract configuration injected via application.properties or application.yml
 	@Value("${blockchain.nodeUrl}")
@@ -60,75 +52,20 @@ public class BlockchainService {
 		// 2. Load credentials
 		this.credentials = Credentials.create(privateKey);
 
-		System.out.println(credentials.getEcKeyPair().getPrivateKey());
-
-		System.out.println("credentials okay");
 		// 3. Load deployed contracts
-
-		StaticGasProvider gasProvider = new StaticGasProvider(
-				BigInteger.valueOf(20_000_000_000L), // Gas price (in Wei)
-				BigInteger.valueOf(10_000_000L)     // Gas limit
-		);
-
-		this.registryContract = ImmigrantRegistry.load(
-				registryContractAddress, web3j, credentials, gasProvider
-		);
-
-		String address = registryContract.getContractAddress();
-		System.out.println("Deployed at " + address);
-
-		System.out.println(registryContract.isValid());
-
-		EthGetCode ethGetCode = web3j.ethGetCode(registryContractAddress, DefaultBlockParameterName.LATEST).send();
-		String code = ethGetCode.getCode();
-		System.out.println("Bytecode at address " + registryContractAddress + ": " + code);
-
-
-
-
-
-		if (code.equals("0x") || code.isEmpty()) {
-			System.out.println("No code found at the address.");
-		} else {
-			System.out.println("Contract code exists.");
-		}
-
-		System.out.println("Connected to network ID: "
-				+ web3j.netVersion().send().getNetVersion());
-
-		System.out.println("Expected address: " + registryContractAddress);
-		System.out.println("Loaded contract address: " + registryContract.getContractAddress());
-
-
-
 		System.out.println("registry contract loaded suc");
 		this.locationContract = ImmigrantLocationLog.load(
 				locationContractAddress, web3j, credentials, new DefaultGasProvider()
 		);
-		String address2 = locationContract.getContractAddress();
-		System.out.println("Deployed at " + address2);
-		System.out.println("location contract loaded suc");
 
-		String contractAddress2 = "0x2f85D247245F182fbBD835928f3395A1Af849647";
+		this.registryContract = ImmigrantRegistry.load(
+				registryContractAddress, web3j, credentials, new DefaultGasProvider()
+		);
+		System.out.println("Connected to network ID: "
+				+ web3j.netVersion().send().getNetVersion());
 
 		// Verify contract validity
-
 		System.out.println("Contracts loaded successfully.");
-
-		EthEstimateGas estimateGas = web3j.ethEstimateGas(
-				Transaction.createContractTransaction(
-						credentials.getAddress(),
-						BigInteger.ZERO, // No Ether sent
-						BigInteger.valueOf(6_721_975L), // Gas limit
-						ImmigrantRegistry.BINARY // Replace with actual bytecode
-				)
-		).send();
-
-		if (estimateGas.hasError()) {
-			System.out.println("Error estimating gas: " + estimateGas.getError().getMessage());
-		} else {
-			System.out.println("Estimated gas: " + estimateGas.getAmountUsed());
-		}
 	}
 
 	/**
@@ -138,10 +75,9 @@ public class BlockchainService {
 	 */
 	public String[] generateKeyPair() {
 		try {
-			SecureRandom random = new SecureRandom();
-			ECKeyPair keyPair = Keys.createEcKeyPair(random);
-			String privateKey = keyPair.getPrivateKey().toString(16); // Hexadecimal private key
-			String publicKey = Keys.getAddress(keyPair); // Ethereum address (public key)
+			ECKeyPair keyPair = Keys.createEcKeyPair();
+			String privateKey = keyPair.getPrivateKey().toString(16);
+			String publicKey = "0x" + Keys.getAddress(keyPair);
 			return new String[]{privateKey, publicKey};
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -168,7 +104,7 @@ public class BlockchainService {
 			String ethnicity,
 			String creationTime,
 			String officerId
-	) {
+	) throws APIException {
 		try {
 			registryContract.createImmigrant(
 					uuid,
@@ -182,7 +118,8 @@ public class BlockchainService {
 			System.out.println("Immigrant identity saved to blockchain.");
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new RuntimeException("Error saving immigrant identity to blockchain.");
+			throw new APIException("Error saving immigrant to blockchain.", HttpStatus.BAD_REQUEST,
+					LocalDateTime.now().toString());
 		}
 	}
 
@@ -192,7 +129,7 @@ public class BlockchainService {
 	 * @param uuid The unique ID used during createImmigrant
 	 * @return ImmigrantData containing the chain-stored fields, or null if an error occurs
 	 */
-	public ImmigrantBlockchainData getImmigrantByUUID(String uuid) {
+	public ImmigrantBlockchainData getImmigrantByUUID(String uuid) throws APIException {
 		try {
 			// Call the 'getImmigrant' function from the wrapper,
 			// which returns a Tuple7 of strings.
@@ -216,15 +153,15 @@ public class BlockchainService {
 					result.component7()  // officerId
 			);
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException("Error fetching immigrant identity from blockchain.", e);
+			throw new APIException("Error fetching immigrant identity from blockchain.", HttpStatus.NO_CONTENT,
+					LocalDateTime.now().toString());
 		}
 	}
 
 	/**
 	 * Log an immigrant's location on the blockchain.
 	 */
-	public void logImmigrantLocation(LocationLogData locationLogData) {
+	public void logImmigrantLocation(LocationLogData locationLogData) throws APIException {
 		try {
 			locationContract.logLocation(
 					locationLogData.getImmigrantId(),
@@ -235,14 +172,15 @@ public class BlockchainService {
 			System.out.println("Immigrant location logged on blockchain.");
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new RuntimeException("Error logging immigrant location to blockchain.");
+			throw new APIException("Error logging immigrant location to blockchain.", HttpStatus.BAD_REQUEST,
+					LocalDateTime.now().toString());
 		}
 	}
 
 	/**
 	 * Fetch location logs for an immigrant by their ID.
 	 */
-	public List<LocationLogData> getImmigrantLocationLogs(String immigrantId) {
+	public List<LocationLogData> getImmigrantLocationLogs(String immigrantId) throws APIException {
 		try {
 
 			// The generated method returns an array of LocationLog
@@ -260,7 +198,27 @@ public class BlockchainService {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new RuntimeException("Error fetching immigrant location logs from blockchain.", e);
+			throw new APIException("Error fetching immigrant location logs from blockchain.", HttpStatus.NO_CONTENT,
+					LocalDateTime.now().toString());
+		}
+	}
+
+	public boolean isValidIdentity(String privateKeyHex, String providedPublicKeyHex) {
+		try {
+			BigInteger privateKey = new BigInteger(privateKeyHex, 16);
+			ECKeyPair keyPair = ECKeyPair.create(privateKey);
+
+			// Derive the public key from the private key
+			String derivedPublicKey = "0x" + Keys.getAddress(keyPair.getPublicKey());
+
+			System.out.println("Derived Public Key: " + derivedPublicKey);
+			System.out.println("Provided Public Key: " + providedPublicKeyHex);
+
+			// Compare the derived public key with the provided one
+			return derivedPublicKey.equalsIgnoreCase(providedPublicKeyHex);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
 		}
 	}
 }

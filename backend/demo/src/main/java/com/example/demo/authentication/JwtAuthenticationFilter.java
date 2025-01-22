@@ -65,6 +65,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 							null, userDetails.getAuthorities());
 					authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 					SecurityContextHolder.getContext().setAuthentication(authToken);
+					System.out.println("token is valid");
 				}
 			}
 
@@ -72,6 +73,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 		}catch (Exception e) {
 			handlerExceptionResolver.resolveException(request, response, null, e);
+			System.out.println("token is not valid");
 		}
 	}
 }
