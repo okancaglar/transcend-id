@@ -1,0 +1,122 @@
+@import url("https://fonts.googleapis.com/css2? family=Poppins:wght@300;400;500;600;700;800;900&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: url(../images/pexels-mertkahveci-8011539.jpg) no-repeat;
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+h1 {
+  font-size: 65px;
+  text-align: center;
+  color: #fff;
+}
+
+.logo-wrapper {
+  margin-top: 100px;
+  margin-bottom: 100px;
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(1px);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  color: #fff;
+  padding: 20px 30px;
+  border-radius: 50px;
+}
+
+.wrapper {
+  width: 50%;
+  height: fit-content;
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  color: #fff;
+  padding: 30px 40px;
+  border-radius: 10px;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 100px;
+  
+}
+
+.wrapper h2 {
+  font-size: 15px;
+  text-align: left;
+}
+
+.content {
+  position: relative;
+  width: 100%;
+  height: max-content;
+  margin: 50px 0;
+}
+
+.input-box {
+  position: relative;
+  width: 100%;
+  height: max-content;
+  margin: 10px;
+}
+
+.input-box label {
+  font-weight: 600;
+}
+
+.reg-log-btn {
+  width: 60%;
+  height: 45px;
+  background: #fff;
+  border: none;
+  outline: none;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  font-size: 16px;
+  color: #333;
+  font-weight: 600;
+  margin-top: 5px;
+}
+
+.input-box input {
+  width: 40%;
+  height: 50%;
+  background: transparent;
+  border: none;
+  outline: none;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  font-size: 16px;
+  color: #fff;
+  padding: 10px 20px 10px 10px;
+}
+
+.input-box input::placeholder {
+  color: #fff;
+}
+
+.btn {
+  background: #fff;
+  border: none;
+  outline: none;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  font-size: 16px;
+  color: #333;
+  font-weight: 600;
+  padding: 10px 10px;
+}
