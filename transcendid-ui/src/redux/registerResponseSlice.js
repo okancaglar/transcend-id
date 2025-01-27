@@ -1,4 +1,3 @@
-// src/redux/registerResponseSlice.js
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
@@ -11,11 +10,9 @@ const registerResponseSlice = createSlice({
     initialState,
     reducers: {
         setRegisterResponse: (state, action) => {
-            // Overwrite the entire registerResponse
             return action.payload;
         },
         clearRegisterResponse: () => {
-            // Reset to initial blank
             return { ...initialState };
         },
     },

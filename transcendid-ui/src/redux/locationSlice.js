@@ -1,4 +1,3 @@
-// src/redux/locationSlice.js
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = [
@@ -10,11 +9,9 @@ const locationSlice = createSlice({
     initialState,
     reducers: {
         setLocations: (state, action) => {
-            // Overwrite the entire array
             return action.payload;
         },
         addLocation: (state, action) => {
-            // Push a new location object
             state.push(action.payload);
         },
         clearLocations: () => {

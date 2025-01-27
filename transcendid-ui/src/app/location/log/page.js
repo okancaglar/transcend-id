@@ -2,7 +2,7 @@
 
 import "@/styles/css/refugee-log-page.css";
 import {useState} from "react";
-import { useRouter} from "next/navigation";
+import {useRouter} from "next/navigation";
 
 export default function Log(){
 
@@ -22,14 +22,15 @@ export default function Log(){
         e.preventDefault();
         setError("");
 
+        localStorage.setItem("locationLog", formData.immigrantId + "-" + formData.location);
+
         try {
             // Basic validation
             if (!formData.immigrantId.trim() || !formData.location.trim()) {
                 throw new Error("Please fill in all fields");
             }
 
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+            localStorage.setItem("locationLog", formData.immigrantId + "-" + formData.location);
 
             console.log(formData);
 
@@ -40,10 +41,7 @@ export default function Log(){
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify(formData),
-                signal: controller.signal,
             });
-
-            clearTimeout(timeoutId);
 
             const data = await response.text();
 
@@ -57,6 +55,7 @@ export default function Log(){
             }
 
             setFormData({immigrantId: "", location: ""});
+            await router.push("/home");
 
         } catch (error) {
             console.error("Login error:", error);
@@ -72,7 +71,7 @@ export default function Log(){
 
             {/* Form Wrapper */}
             <div className="wrapper">
-                <form onSubmit={handleSubmit}>
+                <form>
                     <h2>Refugee Log Page</h2>
 
                     <div className="input-box">
@@ -101,11 +100,10 @@ export default function Log(){
                         />
                     </div>
 
-                    <button type="submit" className="btn">
-                        <a href="/home" style={{textDecoration: "none"}}>
+                    <button type="submit" className="btn" onClick={handleSubmit}>
                         Submit
-                        </a>
                     </button>
+
                 </form>
             </div>
         </>

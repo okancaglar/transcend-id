@@ -1,3 +1,4 @@
+"use client";
 import {ReduxProvider} from "@/redux/ReduxProvider";
 
 export default function RootLayout({ children }) {

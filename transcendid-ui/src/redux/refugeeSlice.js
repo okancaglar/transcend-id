@@ -1,4 +1,3 @@
-// src/redux/refugeeSlice.js
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
@@ -16,15 +15,12 @@ const refugeeSlice = createSlice({
     initialState,
     reducers: {
         setRefugee: (state, action) => {
-            // Overwrite the entire refugee object
             return action.payload;
         },
         updateRefugee: (state, action) => {
-            // Merge partial updates into the existing refugee
             return { ...state, ...action.payload };
         },
         clearRefugee: () => {
-            // Reset to initial blank
             return { ...initialState };
         },
     },
