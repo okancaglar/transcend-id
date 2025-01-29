@@ -35,8 +35,10 @@ public class SecurityConfiguration {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
 		http.csrf(AbstractHttpConfigurer::disable)
+				.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 				.authorizeHttpRequests(auth -> auth.requestMatchers("/blockchain/api/login")
 						.permitAll()
+						.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 						.anyRequest().authenticated())
 				.sessionManagement(sess -> sess.sessionCreationPolicy(
 						SessionCreationPolicy.STATELESS
@@ -54,7 +56,7 @@ public class SecurityConfiguration {
 
 		CorsConfiguration corsConfiguration = new CorsConfiguration();
 
-		corsConfiguration.setAllowedOrigins(List.of("http://localhost:8080"));
+		corsConfiguration.setAllowedOrigins(List.of("http://localhost:8080", "http://localhost:3000"));
 		corsConfiguration.setAllowedMethods(List.of("GET", "POST"));
 		corsConfiguration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
 

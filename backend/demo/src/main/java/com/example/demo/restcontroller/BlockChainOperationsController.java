@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 @RestController()
@@ -77,9 +78,10 @@ public class BlockChainOperationsController {
 		return new ResponseEntity<ImmigrantRegistryResponseData>(response, HttpStatus.OK);
 	}
 
-	@GetMapping("/immigrant/get")
+	@PostMapping("/immigrant/get")
 	public ResponseEntity<ImmigrantBlockchainData> getImmigrantHandler(@RequestBody ImmigrantGetRequestData request) throws APIException {
 		ImmigrantBlockchainData immigrantData = blockchainService.getImmigrantByUUID(request.getUuid());
+		System.out.println("post immigrant get: " + immigrantData.getUuid());
 
 		return new ResponseEntity<ImmigrantBlockchainData>(immigrantData, HttpStatus.OK);
 	}
@@ -100,7 +102,7 @@ public class BlockChainOperationsController {
 		if (officerId == null && authenticatedOfficer.getPrincipal() instanceof UserDetails) {
 			officerId = ((UserDetails) authenticatedOfficer.getPrincipal()).getUsername();
 		}
-		System.out.println(locationLog.getImmigrantId());
+		System.out.println("new location log, uuid: " + locationLog.getImmigrantId() + " location: " + locationLog.getLocation());
 
 		blockchainService.logImmigrantLocation(new LocationLogData(locationLog.getImmigrantId(), locationLog.getLocation(),
 		getBlockchainCurrentTime(),	officerId));
@@ -108,9 +110,16 @@ public class BlockChainOperationsController {
 		return new ResponseEntity<>("Location logging operation is successful", HttpStatus.OK);
 	}
 
-	@GetMapping("/location/get")
+	@PostMapping("/location/get")
 	public ResponseEntity<List<LocationLogData>> getLocationLogs(@RequestBody GetLocationLogsRequestData getLogs) throws APIException {
-		return new ResponseEntity<>(blockchainService.getImmigrantLocationLogs(getLogs.getUuid()), HttpStatus.OK);
+		List<LocationLogData> logDataList = blockchainService.getImmigrantLocationLogs(getLogs.getUuid());
+		logDataList.forEach(new Consumer<LocationLogData>() {
+			@Override
+			public void accept(LocationLogData locationLogData) {
+				System.out.println("Location in get location method: " + locationLogData.getLocation());
+			}
+		});
+		return new ResponseEntity<>(logDataList, HttpStatus.OK);
 	}
 
 	@PostMapping("/immigrant/validation")
